@@ -7,6 +7,9 @@ var i2cDriver = require("i2c-bus"), oledDriver = require("oled-i2c-bus"), defaul
  */
 module.exports = /** @class */ (function () {
     function ws18014(opts) {
+        if (typeof opts == "undefined") {
+            opts = {};
+        }
         this.I2C = i2cDriver.openSync(1);
         this.OLED_ADDRESS = opts.oledAddress || 0x3c;
         this.OLED_WIDTH = opts.oledWidth || 128;
@@ -159,7 +162,7 @@ module.exports = /** @class */ (function () {
             return this.MODE;
         },
         set: function (val) {
-            console.log(val);
+            //console.log(val);
             if (val === this.MODE) {
                 // nothing to do here
                 return;

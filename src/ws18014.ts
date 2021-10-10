@@ -39,23 +39,26 @@ module.exports = class ws18014 {
   INTERVAL_TEMP: NodeJS.Timer;
   MODE: string;
 
-  constructor(opts: {
-    oledAddress: number;
-    oledWidth: number;
-    oledHeight: number;
-    oledUpdateFreq: number;
-    font: any;
-    charLines: number;
-    lineHeight: number;
-    oledInverted: boolean;
-    oledInvertedAuto: boolean;
-    oledInvertedFreq: number;
-    fanAddress: number;
-    fanTempOn: number;
-    fanTempOff: number;
-    networkInterfaceName: string;
-    displayMode: string;
+  constructor(opts?: {
+    oledAddress?: number;
+    oledWidth?: number;
+    oledHeight?: number;
+    oledUpdateFreq?: number;
+    font?: any;
+    charLines?: number;
+    lineHeight?: number;
+    oledInverted?: boolean;
+    oledInvertedAuto?: boolean;
+    oledInvertedFreq?: number;
+    fanAddress?: number;
+    fanTempOn?: number;
+    fanTempOff?: number;
+    networkInterfaceName?: string;
+    displayMode?: string;
   }) {
+    if (typeof opts == "undefined") {
+      opts = {};
+    }
     this.I2C = i2cDriver.openSync(1);
     this.OLED_ADDRESS = opts.oledAddress || 0x3c;
     this.OLED_WIDTH = opts.oledWidth || 128;
@@ -232,7 +235,7 @@ module.exports = class ws18014 {
   }
 
   set displayMode(val: string) {
-    console.log(val);
+    //console.log(val);
     if (val === this.MODE) {
       // nothing to do here
       return;

@@ -6,20 +6,14 @@
   "scripts": {
     "test": "node test/test.js",
     "build": "tsc --build",
-    "clean": "tsc --build --clean"
+    "clean": "tsc --build --clean",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/notglossy/ws18014-poe-hat.git"
   },
-  "keywords": [
-    "Raspberry-Pi",
-    "Waveshare",
-    "POE",
-    "i2c",
-    "oled",
-    "fan"
-  ],
+  "keywords": ["Raspberry-Pi", "Waveshare", "POE", "i2c", "oled", "fan"],
   "author": "Matthew Potter",
   "license": "MIT",
   "bugs": {
