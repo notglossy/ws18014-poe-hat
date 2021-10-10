@@ -1,0 +1,35 @@
+{
+  "name": "ws18014-poe-hat",
+  "version": "1.0.0",
+  "description": "A npm package for the WaveShare PoE HAT (B) which recreates functions of the Python example code.",
+  "main": "ws18014.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/notglossy/ws18014-poe-hat.git"
+  },
+  "keywords": [
+    "Raspberry-Pi",
+    "Waveshare",
+    "POE",
+    "i2c",
+    "oled",
+    "fan"
+  ],
+  "author": "Matthew Potter",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/notglossy/ws18014-poe-hat/issues"
+  },
+  "homepage": "https://github.com/notglossy/ws18014-poe-hat#readme",
+  "dependencies": {
+    "i2c-bus": "^5.2.2",
+    "oled-font-5x7": "^1.0.3",
+    "oled-i2c-bus": "^1.0.12"
+  },
+  "devDependencies": {
+    "@types/node": "^16.10.3"
+  }
+}
