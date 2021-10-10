@@ -36,20 +36,20 @@ The PoE Hat(B) has a switch for manually controlling the fan. To enable I2C cont
 ### Installation
 From your project folder run:
 ```sh 
-npm install ws18014
+npm install ws18014-poe-hat
 ```
 
 ### Examples
 Basic use with default options:
 ```javascript
-const ws18014 = require("ws18014");
+const ws18014 = require("ws18014-poe-hat");
 
 var poeHat = new ws18014();
 // You should now see the IP, CPU temperature, and fan status.
 ```
 Setup with auto inversion and custom fan temperatures:
 ```javascript
-const ws18014 = require("ws18014");
+const ws18014 = require("ws18014-poe-hat");
 
 let opts = {
     oledInvertedAuto: true,
@@ -62,7 +62,7 @@ var poeHat = new ws18014(opts);
 ```
 Setup with custom text:
 ```javascript
-const ws18014 = require("ws18014");
+const ws18014 = require("ws18014-poe-hat");
 
 var poeHat = new ws18014({mode:"custom"});
 
