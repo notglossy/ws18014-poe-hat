@@ -1,4 +1,4 @@
-# ws18014
+# ws18014-poe-hat
 ws18014 is a npm package for the [WaveShare PoE HAT (B)](https://www.waveshare.com/poe-hat-b.htm) which recreates functions of the Python example code. This package was designed as a quick and easy way to test and use the features of this hat for those who are more comfortable with JavaScript.
 
 ### Ported Python Features
