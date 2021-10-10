@@ -7,7 +7,6 @@ var i2cDriver = require("i2c-bus"), oledDriver = require("oled-i2c-bus"), defaul
  */
 module.exports = /** @class */ (function () {
     function ws18014(opts) {
-        if (opts === void 0) { opts = {}; }
         this.I2C = i2cDriver.openSync(1);
         this.OLED_ADDRESS = opts.oledAddress || 0x3c;
         this.OLED_WIDTH = opts.oledWidth || 128;
@@ -38,12 +37,18 @@ module.exports = /** @class */ (function () {
         this.INTERVAL_INVERSION;
         this.INTERVAL_SCREEN;
         this.INTERVAL_TEMP = setInterval(this.tempCycle.bind(this), this.TEMP_FREQUENCY);
-        this.MODE = opts.mode || "default";
+        this.MODE = opts.displayMode || "default";
         if (this.OLED_INVERTED_AUTO) {
             this.INTERVAL_INVERSION = setInterval(this.invert.bind(this), this.OLED_INVERTED_FREQ);
         }
-        if (this.MODE === "default") {
+        if (this.MODE !== "custom" && this.MODE !== "default") {
+            this.MODE = "default";
+        }
+        else if (this.MODE === "default") {
             this.INTERVAL_SCREEN = setInterval(this.defaultCycle.bind(this), this.OLED_UPDATE_FREQ);
+        }
+        else if (this.MODE === "custom") {
+            this.OLED.clearDisplay();
         }
     }
     /**
@@ -106,7 +111,6 @@ module.exports = /** @class */ (function () {
         else if (this.CURRENT_TEMP <= this.FAN_TEMP_OFF) {
             this.fanPower = false;
         }
-        console.log(this.CURRENT_TEMP);
     };
     Object.defineProperty(ws18014.prototype, "fanPower", {
         /**
@@ -119,12 +123,12 @@ module.exports = /** @class */ (function () {
             var power = Boolean(val);
             if (power) {
                 this.I2C.sendByte(this.FAN_ADDRESS, this.FAN_COMMAND_ON, function () {
-                    console.log("Fan: POWER ON");
+                    //console.log("Fan: POWER ON");
                 });
             }
             else {
                 this.I2C.sendByte(this.FAN_ADDRESS, this.FAN_COMMAND_OFF, function () {
-                    console.log("Fan: POWER OFF");
+                    //console.log("Fan: POWER OFF");
                 });
             }
             this.FAN_RUNNING = power;
@@ -147,5 +151,40 @@ module.exports = /** @class */ (function () {
             y += this.LINE_HEIGHT;
         }
     };
+    Object.defineProperty(ws18014.prototype, "displayMode", {
+        /**
+         * Handles dyanamic mode change.
+         */
+        get: function () {
+            return this.MODE;
+        },
+        set: function (val) {
+            console.log(val);
+            if (val === this.MODE) {
+                // nothing to do here
+                return;
+            }
+            else if (val !== "custom" && val !== "default") {
+                // if unknown, set to default
+                this.MODE = "default";
+            }
+            else {
+                this.MODE = val;
+            }
+            if (this.MODE === "default") {
+                // if default, start the interval
+                this.OLED.clearDisplay();
+                this.INTERVAL_SCREEN = setInterval(this.defaultCycle.bind(this));
+                this.defaultCycle();
+            }
+            else if (this.MODE === "custom") {
+                // if custom, blank the display for use
+                clearInterval(this.INTERVAL_SCREEN);
+                this.OLED.clearDisplay();
+            }
+        },
+        enumerable: false,
+        configurable: true
+    });
     return ws18014;
 }());

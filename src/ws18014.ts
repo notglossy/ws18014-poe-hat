@@ -39,7 +39,23 @@ module.exports = class ws18014 {
   INTERVAL_TEMP: NodeJS.Timer;
   MODE: string;
 
-  constructor(opts: any = {}) {
+  constructor(opts: {
+    oledAddress: number;
+    oledWidth: number;
+    oledHeight: number;
+    oledUpdateFreq: number;
+    font: any;
+    charLines: number;
+    lineHeight: number;
+    oledInverted: boolean;
+    oledInvertedAuto: boolean;
+    oledInvertedFreq: number;
+    fanAddress: number;
+    fanTempOn: number;
+    fanTempOff: number;
+    networkInterfaceName: string;
+    displayMode: string;
+  }) {
     this.I2C = i2cDriver.openSync(1);
     this.OLED_ADDRESS = opts.oledAddress || 0x3c;
     this.OLED_WIDTH = opts.oledWidth || 128;
@@ -73,7 +89,7 @@ module.exports = class ws18014 {
       this.tempCycle.bind(this),
       this.TEMP_FREQUENCY
     );
-    this.MODE = opts.mode || "default";
+    this.MODE = opts.displayMode || "default";
 
     if (this.OLED_INVERTED_AUTO) {
       this.INTERVAL_INVERSION = setInterval(
@@ -82,18 +98,22 @@ module.exports = class ws18014 {
       );
     }
 
-    if (this.MODE === "default") {
+    if (this.MODE !== "custom" && this.MODE !== "default") {
+      this.MODE = "default";
+    } else if (this.MODE === "default") {
       this.INTERVAL_SCREEN = setInterval(
         this.defaultCycle.bind(this),
         this.OLED_UPDATE_FREQ
       );
+    } else if (this.MODE === "custom") {
+      this.OLED.clearDisplay();
     }
   }
 
   /**
    * Toggles inversion, or sets inversion with true/false.
    */
-  invert(val) {
+  invert(val: boolean): void {
     if (arguments.length) {
       this.OLED_INVERTED = Boolean(val);
     } else {
@@ -126,7 +146,7 @@ module.exports = class ws18014 {
   /**
    * Creates the default content from the WaveShare Python examples..
    */
-  defaultCycle() {
+  defaultCycle(): void {
     let ip: string =
       this.NETWORK_INTERFACES[this.NETWORK_INTERFACE_NAME][0].address;
 
@@ -150,7 +170,7 @@ module.exports = class ws18014 {
   /**
    * Retrieves the temperture and uses this info to activate the fan.
    */
-  tempCycle() {
+  tempCycle(): void {
     this.CURRENT_TEMP =
       Number(fs.readFileSync("/sys/class/thermal/thermal_zone0/temp")) / 1000;
 
@@ -159,8 +179,6 @@ module.exports = class ws18014 {
     } else if (this.CURRENT_TEMP <= this.FAN_TEMP_OFF) {
       this.fanPower = false;
     }
-
-    console.log(this.CURRENT_TEMP);
   }
 
   /**
@@ -175,11 +193,11 @@ module.exports = class ws18014 {
 
     if (power) {
       this.I2C.sendByte(this.FAN_ADDRESS, this.FAN_COMMAND_ON, function () {
-        console.log("Fan: POWER ON");
+        //console.log("Fan: POWER ON");
       });
     } else {
       this.I2C.sendByte(this.FAN_ADDRESS, this.FAN_COMMAND_OFF, function () {
-        console.log("Fan: POWER OFF");
+        //console.log("Fan: POWER OFF");
       });
     }
 
@@ -189,7 +207,7 @@ module.exports = class ws18014 {
   /**
    * Writes lines of characters to the OLED.
    */
-  writeLines(lines: string[], blank: boolean) {
+  writeLines(lines: string[], blank: boolean): void {
     let i: number = 0,
       y: number = 1;
 
@@ -202,6 +220,38 @@ module.exports = class ws18014 {
       this.OLED.writeString(this.FONT, 1, lines[i], 1, true);
       i++;
       y += this.LINE_HEIGHT;
+    }
+  }
+
+  /**
+   * Handles dyanamic mode change.
+   */
+
+  get displayMode(): string {
+    return this.MODE;
+  }
+
+  set displayMode(val: string) {
+    console.log(val);
+    if (val === this.MODE) {
+      // nothing to do here
+      return;
+    } else if (val !== "custom" && val !== "default") {
+      // if unknown, set to default
+      this.MODE = "default";
+    } else {
+      this.MODE = val;
+    }
+
+    if (this.MODE === "default") {
+      // if default, start the interval
+      this.OLED.clearDisplay();
+      this.INTERVAL_SCREEN = setInterval(this.defaultCycle.bind(this));
+      this.defaultCycle();
+    } else if (this.MODE === "custom") {
+      // if custom, blank the display for use
+      clearInterval(this.INTERVAL_SCREEN);
+      this.OLED.clearDisplay();
     }
   }
 };

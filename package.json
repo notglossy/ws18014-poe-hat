@@ -1,10 +1,12 @@
 {
   "name": "ws18014-poe-hat",
   "version": "1.0.0",
-  "description": "A npm package for the WaveShare PoE HAT (B) which recreates functions of the Python example code.",
+  "description": "A npm package for the WaveShare PoE HAT (B) that allows control of the OLED and fan.",
   "main": "ws18014.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/test.js",
+    "build": "tsc --build",
+    "clean": "tsc --build --clean"
   },
   "repository": {
     "type": "git",
@@ -30,6 +32,7 @@
     "oled-i2c-bus": "^1.0.12"
   },
   "devDependencies": {
-    "@types/node": "^16.10.3"
+    "@types/node": "^16.10.3",
+    "typescript": "^4.4.3"
   }
 }
